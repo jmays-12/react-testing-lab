@@ -22,7 +22,14 @@ describe("Display Transactions", () => {
 
         render(<App />);
 
-        // verify transaction table loads
+        // wait for fetched transactions to render
+        expect(
+            await screen.findByText("Paycheck from Bob's Burgers"),
+        ).toBeInTheDocument();
+
+        expect(screen.getByText("Chipotle")).toBeInTheDocument();
+
+        // verify transaction table headers exist
         expect(
             screen.getByRole("columnheader", { name: /Date/i }),
         ).toBeInTheDocument();
@@ -38,13 +45,6 @@ describe("Display Transactions", () => {
         expect(
             screen.getByRole("columnheader", { name: /Amount/i }),
         ).toBeInTheDocument();
-
-        // verify transactions display after fetch
-        expect(
-            await screen.findByText("Paycheck from Bob's Burgers"),
-        ).toBeInTheDocument();
-
-        expect(screen.getByText("Chipotle")).toBeInTheDocument();
     });
 
     test("handles an empty transaction list", async () => {
@@ -53,11 +53,33 @@ describe("Display Transactions", () => {
         render(<App />);
 
         expect(
-            screen.getByRole("columnheader", { name: /Date/i }),
+            await screen.findByRole("columnheader", { name: /Date/i }),
         ).toBeInTheDocument();
 
+        // no transaction rows should appear
         expect(
             screen.queryByText("Paycheck from Bob's Burgers"),
         ).not.toBeInTheDocument();
+    });
+
+    test("handles transactions with missing data", async () => {
+        setFetchResponse([
+            {
+                id: "3",
+                date: "2025-01-01",
+                description: "",
+                category: "Food",
+                amount: 10,
+            },
+        ]);
+
+        render(<App />);
+
+        // table should still load even with incomplete transaction data
+        expect(
+            await screen.findByRole("columnheader", { name: /Description/i }),
+        ).toBeInTheDocument();
+
+        expect(screen.getByText("Food")).toBeInTheDocument();
     });
 });

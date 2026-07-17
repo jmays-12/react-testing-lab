@@ -13,7 +13,20 @@ function AddTransactionForm({ postTransaction }) {
             amount: formData.get("amount"),
         };
 
+        // prevent submitting incomplete transactions
+        if (
+            !newTransaction.date ||
+            !newTransaction.description ||
+            !newTransaction.category ||
+            !newTransaction.amount
+        ) {
+            return;
+        }
+
         postTransaction(newTransaction);
+
+        // clear the form after successful submission
+        e.target.reset();
     }
 
     return (
