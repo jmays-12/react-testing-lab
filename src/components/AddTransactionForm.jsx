@@ -10,7 +10,7 @@ function AddTransactionForm({ postTransaction }) {
             date: formData.get("date"),
             description: formData.get("description"),
             category: formData.get("category"),
-            amount: formData.get("amount"),
+            amount: Number(formData.get("amount")),
         };
 
         // prevent submitting incomplete transactions
